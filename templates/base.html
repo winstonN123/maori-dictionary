@@ -1,0 +1,63 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Comfortaa&family=Suez+One&display=swap" rel="stylesheet">
+	<title>{% block title %}{% endblock %}</title>
+	<meta name="Description" content="Author: D Benseman, Content: A dictionary to convert maori words to english.">
+</head>
+
+<body>
+	<div id="container">
+
+		<header>
+			<h1>{% block heading %}{% endblock %}</h1>
+		</header>
+
+		<nav>
+			<ul>
+                <li><a href="\">Home</a></li>
+                <div class="dropdown">
+                    <li><button class="dropbtn">Categories</button></li>
+                        <div class="dropdown-content">
+                           {% for category in categories %}
+                                <li><a href="/{{ category[0] }}">{{ category[0] }}</a></li>
+                           {% endfor %}
+                        </div>
+                </div>
+
+                <div>
+                    {% if logged_in %}
+                    li><a href = "/logout">log out</a></li>
+                    {% else %}
+                    <li><a href = "/login">log in</a></li>
+                    {% endif %}
+                </div>
+			</ul>
+		</nav>
+
+
+		<!--
+		=====================================================
+		== Content row of the template.                 ==
+		=====================================================
+		-->
+
+		<main>
+
+
+            {% block main%}{% endblock %}
+        </main>
+
+
+		<footer>
+			<p>
+				&copy; Enter your name here 2020
+			</p>
+		</footer>
+
+	</div>
+</body>
+</html>

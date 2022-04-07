@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Maōri Dictionary | Home{% endblock %}
+
+{% block heading %}Maōri - English Dictionary{% endblock %}
+
+{% block main %}
+
+    <table class = "cart-table">
+    <thead>
+        <tr>
+            <td>Maori</td>
+            <td>English</td>
+            <td>Catagory</td>
+            <td>Definition</td>
+            <td>Level</td>
+            <td>Image</td>
+        </tr>
+    </thead>
+    <tbody>
+
+
+            {% for wordbank in wordlists %}
+            <td>{{ wordbank[0] }}</td>
+            <td>{{ wordbank[1] }}</td>
+            <td>{{ wordbank[2] }}</td>
+            <td>{{ wordbank[3] }}</td>
+            <td>{{ wordbank[4] }}</td>
+            <img src =" static/images/{{ wordbank[5] }}.jpg">
+            {% endfor %}
+
+        </tr>
+    </tbody>
+
+{% endblock %}
+</table>
