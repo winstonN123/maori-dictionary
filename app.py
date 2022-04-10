@@ -2,6 +2,7 @@ from flask import Flask,render_template,request,redirect,session
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 app=Flask(__name__)
 app.secret_key="valorant"
@@ -29,20 +30,55 @@ def is_logged_in():
         print("logged in")
         return True
 
+def categories():
+    con=create_connection(DATABASE)
+    query="SELECT category FROM category"
+    cur=con.cursor()
+    cur.execute(query)
+    category_list=cur.fetchall()
+    con.close()
+    return category_list
+
+def wordbank_list():
+    con=create_connection(DATABASE)
+    query="SELECT maori,english,categories,definition,level,date FROM wordbank"
+    cur=con.cursor()
+    cur.execute(query)
+    wordbank_list=cur.fetchall()
+    con.close()
+    return wordbank_list
+
+def add_categories():
+    if request.method == "POST":
+        category = request.form.get('add_category').strip().title()
+        print(request.form)
+        query="INSERT INTO category(category) VALUES (?,)"
+        con=create_connection(DATABASE)
+        cur=con.cursor()
+        try:
+            cur.execute(query,(category))
+        except sqlite3.IntegrityError as e:
+            print(e)
+            print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
+            return redirect('/menu?error=Something+went+very+very+wrong')
+
+        con.commit()
+        con.close()
+    return redirect('/admin')
+
 
 @app.route('/')
 def main():
-    con = create_connection(DATABASE)
-    query = "SELECT category FROM category"
-   # querry = "SELECT maori,english ,categories,definition,level,image FROM wordbank "
-    cur = con.cursor()
-    cur.execute(query)
-    #cur.execute(querry)
-    category_list = cur.fetchall()
-    #wordlist_list = cur.fetchall(querry)
-    con.close()
-    print(category_list)
-    return render_template("home.html",categories=category_list,logged_in=is_logged_in())
+
+
+    return render_template("home.html",categories=categories(),logged_in=is_logged_in(),wordbank_list=wordbank_list(),add_categories=add_categories())
+
+
+@app.route("/admin",methods=['POST','GET'])
+def admin():
+
+
+    return render_template('admin.html',logged_in=is_logged_in(),categories=categories())
 
 
 @app.route("/login",methods=['POST','GET'])
@@ -76,10 +112,10 @@ def login():
         session['firstname']=firstname
         print(session)
         return redirect('/')
-    return render_template('login.html',logged_in=is_logged_in())
+    return render_template('login.html',logged_in=is_logged_in(),categories=categories())
 
 @app.route("/signup",methods=['POST','GET'])
-def signin():
+def signup():
     if is_logged_in():
         return redirect('/')
     if request.method == 'POST':
@@ -111,7 +147,7 @@ def signin():
 
     if error == None:
         error=""
-    return render_template("signup.html",error=error,logged_in=is_logged_in())
+    return render_template("signup.html",error=error,logged_in=is_logged_in(),categories=categories())
 
 @app.route('/logout',methods=['POST','GET'])
 def logout():

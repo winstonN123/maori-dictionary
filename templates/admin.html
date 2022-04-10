@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Maōri Dictionary | Home{% endblock %}
+
+{% block heading %}Maōri - English Dictionary{% endblock %}
+
+{% block main %}
+
+
+<form class = "dataForm" method = "POST">
+    <div class ="form-group">
+        <div class ="form-label">Add Category:</div>
+            <div class = "form-element"><input type = "text" name ="add_category" id = "add_category" required></div>
+    </div>
+
+
+    <div class ="form-group">
+        <div class = "form-label">Submit</div>
+            <div class ="form-element"><input type = "submit" value="Add_category"></div>
+    </div>
+
+
+
+</form>
+
+
+{% endblock %}
