@@ -32,7 +32,7 @@ def is_logged_in():
 
 def categories():
     con=create_connection(DATABASE)
-    query="SELECT category FROM category"
+    query="SELECT category,id FROM category"
     cur=con.cursor()
     cur.execute(query)
     category_list=cur.fetchall()
@@ -41,45 +41,37 @@ def categories():
 
 def wordbank_list():
     con=create_connection(DATABASE)
-    query="SELECT maori,english,categories,definition,level,date FROM wordbank"
+    query="SELECT id,maori,english,categories,definition,level,image,date FROM wordbank"
     cur=con.cursor()
-    cur.execute(query)
+    cur.execute(query,)
     wordbank_list=cur.fetchall()
     con.close()
+    print(wordbank_list)
     return wordbank_list
-
-def add_categories():
-    if request.method == "POST":
-        category = request.form.get('add_category').strip().title()
-        print(request.form)
-        query="INSERT INTO category(category) VALUES (?,)"
-        con=create_connection(DATABASE)
-        cur=con.cursor()
-        try:
-            cur.execute(query,(category))
-        except sqlite3.IntegrityError as e:
-            print(e)
-            print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
-            return redirect('/menu?error=Something+went+very+very+wrong')
-
-        con.commit()
-        con.close()
-    return redirect('/admin')
-
 
 @app.route('/')
 def main():
 
-
-    return render_template("home.html",categories=categories(),logged_in=is_logged_in(),wordbank_list=wordbank_list(),add_categories=add_categories())
-
+    return render_template("home.html",categories=categories(),logged_in=is_logged_in(),wordbank_list=wordbank_list())
 
 @app.route("/admin",methods=['POST','GET'])
 def admin():
+    if request.method == "POST":
+        print(request.form)
+        category=request.form.get('add_category').strip().title()
+        con=create_connection(DATABASE)
+        query="INSERT INTO category (category) VALUES (?)"
+        cur=con.cursor()
+        try:
+            cur.execute(query,(category,))
+        except sqlite3.IntegrityError as e:
+            print(e)
+            print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
+            return redirect('/home?error=Something+went+very+very+wrong')
 
-
+        con.commit()
+        con.close()
     return render_template('admin.html',logged_in=is_logged_in(),categories=categories())
-
 
 @app.route("/login",methods=['POST','GET'])
 def login():
@@ -98,9 +90,9 @@ def login():
         con.close()
 
         try:
-            id=user_data[0][0]
-            firstname=user_data[0][1]
-            db_password=user_data[0][2]
+            id=login[0][0]
+            firstname=login[0][1]
+            db_password=login[0][2]
         except IndexError:
             return redirect("/login?error=Email+invalid+or+password+incorrect")
 
@@ -156,7 +148,28 @@ def logout():
     print(list(session.keys()))
     return redirect(request.referrer + '?message=See+you+next+time!')
 
+@app.route('/category/<category_id>')
+def category_pages(category_id):
+    try:
+        category_id = int(category_id)
+    except ValueError:
+        print("{} is not an integer".format(category_id))
+        return redirect("/menu?error=Invalid+product+id")
+    return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id)
 
+@app.route('/word/<word_id>')
+def word_page(word_id):
+    try:
+        word_id = int(word_id)
+    except ValueError:
+        print("{} is not an integer".format(word_id))
+        return redirect("/menu?error=Invalid+product+id")
+    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id)
+
+@app.route("/add_words/<>/<>/<>/<>",methods=['POST','GET'])
+def add_words():
+
+    return render_template("add_words.html",categories=categories())
 
 if __name__ == '__main__':
     app.run()

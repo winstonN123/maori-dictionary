@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+
+{% block pageheading %}Login{% endblock %}
+
+
+{% block main %}
+<form class = "dataForm" method = "POST">
+    <div class ="form-group">
+        <div class ="form-label">Maori word:</div>
+            <div class = "form-element"><input type = "text" name ="firstname" id = "firstname" required></div>
+    </div>
+
+    <div class ="form-group">
+        <div class ="form-label">English word:</div>
+            <div class = "form-element"><input type = "text" name ="lastname" id = "lastname" required></div>
+    </div>
+
+    <div class ="form-group">
+        <div class ="form-label">Definition:</div>
+            <div class = "form-element"><input type = "text" name ="confirm_password" id = "confirm_password" required></div>
+    </div>
+
+    <div class = "erorr" > {{  error }} </div>
+
+    <div class ="form-group">
+        <div class = "form-label">Submit</div>
+            <div class ="form-element"><input type = "submit" value="Sign up"></div>
+    </div>
+
+</form>
+
+
+{% endblock %}

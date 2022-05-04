@@ -19,18 +19,12 @@
 		<nav>
 			<ul>
                 <li><a href="\">Home</a></li>
-                <div class="dropdown">
-                    <li><button class="dropbtn">Categories</button></li>
-                        <div class="dropdown-content">
-                           {% for category in categories %}
-                                <li><a href="/{{ category[0] }}">{{ category[0] }}</a></li>
-                           {% endfor %}
-                        </div>
-                </div>
+                {% for category in categories %}
+                    <li><a href="/category/{{ category[1] }}">{{ category[0] }}</a></li>
+                {% endfor %}
 
                 <div>
-
-
+                    <a>----------------</a>
                     {% if logged_in %}
                     <li><a href = "/admin"> Admin</a></li>
                     <li><a href = "/logout">log out</a></li>
