@@ -27,6 +27,7 @@
                     <a>----------------</a>
                     {% if logged_in %}
                     <li><a href = "/admin"> Admin</a></li>
+                    <li><a href = "/add_words/{{ categories[0][1] }}"> add word</a></li>
                     <li><a href = "/logout">log out</a></li>
                     {% else %}
                     <li><a href = "/login">log in</a></li>

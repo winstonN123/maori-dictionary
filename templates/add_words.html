@@ -8,18 +8,39 @@
 <form class = "dataForm" method = "POST">
     <div class ="form-group">
         <div class ="form-label">Maori word:</div>
-            <div class = "form-element"><input type = "text" name ="firstname" id = "firstname" required></div>
+            <div class = "form-element"><input type = "text" name ="Maori" id = "Maori" required></div>
     </div>
 
     <div class ="form-group">
         <div class ="form-label">English word:</div>
-            <div class = "form-element"><input type = "text" name ="lastname" id = "lastname" required></div>
+            <div class = "form-element"><input type = "text" name ="English" id = "English" required></div>
     </div>
 
     <div class ="form-group">
-        <div class ="form-label">Definition:</div>
-            <div class = "form-element"><input type = "text" name ="confirm_password" id = "confirm_password" required></div>
+        <div class ="form-label">Level:</div>
+        {% for i in range(10) %}
+            <input type = "radio" name = "Level"  value = "{{i + 1 }}"  required>
+            <label>{{ i + 1 }}</label>
+        {% endfor %}
     </div>
+
+    
+
+    <div class="dropdown">
+        <button class="dropbtn">Dropdown</button>
+            <div class="dropdown-content">
+                {% for category in categories %}
+                    <li><a href="/add_words/{{ category[1] }}">{{ category[0] }}</a></li>
+                {% endfor %}
+            </div>
+    </div>
+
+
+    <div class ="form-group">
+        <div class ="form-label">Definition:</div>
+            <div class = "form-element"><input type = "text" name ="Definition" id = "Definition" required></div>
+    </div>
+
 
     <div class = "erorr" > {{  error }} </div>
 

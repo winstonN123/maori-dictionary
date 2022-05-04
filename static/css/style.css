@@ -32,6 +32,12 @@ button:hover{
   display: inline-block;
 }
 
+.dataForm input[type='radio'] {
+    width: 5%;
+    margin: 0px 0px;
+}
+
+
 .dropdown-content {
   display: none;
   position: absolute;
