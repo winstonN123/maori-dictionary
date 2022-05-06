@@ -183,10 +183,10 @@ def add_words(choosen_category_id):
         Level = request.form.get('Level')
         Definition = request.form.get('Definition')
         Date = datetime.now()
-        con = create_connection(DATABASE)
-
+        choosen_category_id = choosen_category_id
+        con=create_connection(DATABASE)
         try:
-            query = "INSERT INTO wordbank (maori,english,category,definition,level,date) VALUES (?,?,?,?)"
+            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date) VALUES (?,?,?,?,?,?)"
         except sqlite3.IntegrityError:
             redirect('/signup?error=Passwords+dont+match')
 

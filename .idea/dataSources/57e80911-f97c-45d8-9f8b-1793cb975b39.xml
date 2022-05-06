@@ -1432,16 +1432,26 @@
       <Position>8</Position>
       <DataType>datetime|0s</DataType>
     </column>
-    <key id="518" parent="174" name="wordbank_pk">
+    <column id="518" parent="174" name="user">
+      <Position>9</Position>
+      <DataType>integer|0s</DataType>
+    </column>
+    <key id="519" parent="174" name="wordbank_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="519" parent="174">
+    <foreign-key id="520" parent="174">
       <ColNames>categories</ColNames>
       <RefTableName>category</RefTableName>
       <RefKeyName>category_pk</RefKeyName>
       <RefColNames>id</RefColNames>
       <OnDelete>cascade</OnDelete>
+    </foreign-key>
+    <foreign-key id="521" parent="174">
+      <ColNames>user</ColNames>
+      <RefTableName>login</RefTableName>
+      <RefKeyName>login_pk</RefKeyName>
+      <RefColNames>id</RefColNames>
     </foreign-key>
   </database-model>
 </dataSource>
