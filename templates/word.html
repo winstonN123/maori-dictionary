@@ -11,7 +11,15 @@
             <p> English : {{ wordbank[2] }}</p>
             <p> Level : {{ wordbank[5] }}</p>
             <p> Definition : {{ wordbank[4] }}</p>
-            <img src =" static/images/{{ wordbank[6] }}.png">
+            <img src =" static/images/{{ wordbank[6] }}">
+            {% if logged_in %}
+                <p> Word id : {{ wordbank[0] }}</p>
+                <p> Added by: {{ username[0][0] }} {{ username[0][1] }}</p>
+                <p>  Date added: {{ wordbank[7] }}</p>
+            {% endif %}
         {% endif %}
     {%  endfor %}
+
+
+
 {% endblock %}

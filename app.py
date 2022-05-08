@@ -40,10 +40,19 @@ def categories():
     con.close()
     return category_list
 
+def username():
+    con = create_connection(DATABASE)
+    query = "SELECT firstname,lastname FROM login"
+    cur = con.cursor()
+    cur.execute(query)
+    username = cur.fetchall()
+    con.close()
+    return username
+
 
 def wordbank_list():
     con = create_connection(DATABASE)
-    query = "SELECT id,maori,english,categories,definition,level,image,date FROM wordbank"
+    query = "SELECT id,maori,english,categories,definition,level,image,date,user FROM wordbank"
     cur = con.cursor()
     cur.execute(query,)
     wordbank_list = cur.fetchall()
@@ -93,7 +102,7 @@ def login():
         con.close()
 
         try:
-            id = user_data[0][0]
+            user_id = user_data[0][0]
             firstname = user_data[0][1]
             db_password = user_data[0][2]
         except IndexError:
@@ -103,7 +112,7 @@ def login():
             return redirect(request.referrer + '?error=Email+invalid+or+password+incorrect')
 
         session['email'] = email
-        session['id'] = id
+        session['user_id'] = user_id
         session['firstname'] = firstname
         print(session)
         return redirect('/')
@@ -161,7 +170,7 @@ def category_pages(category_id):
     except ValueError:
         print("{} is not an integer".format(category_id))
         return redirect("/menu?error=Invalid+product+id")
-    return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id)
+    return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id,logged_in=is_logged_in())
 
 
 @app.route('/word/<word_id>')
@@ -171,7 +180,7 @@ def word_page(word_id):
     except ValueError:
         print("{} is not an integer".format(word_id))
         return redirect("/menu?error=Invalid+product+id")
-    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id)
+    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id,logged_in=is_logged_in(),username=username())
 
 
 @app.route("/add_words/<choosen_category_id>",methods=['POST','GET'])
@@ -184,17 +193,18 @@ def add_words(choosen_category_id):
         Definition = request.form.get('Definition')
         Date = datetime.now()
         choosen_category_id = choosen_category_id
+        user_id = session.get('user_id')
+        print(user_id)
         con=create_connection(DATABASE)
         try:
-            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date) VALUES (?,?,?,?,?,?)"
+            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user) VALUES (?,?,?,?,?,?,?)"
         except sqlite3.IntegrityError:
             redirect('/signup?error=Passwords+dont+match')
 
         cur = con.cursor()
-        cur.execute(query,(Maori_word,English_word,choosen_category_id,Definition,Level,Date))
+        cur.execute(query,(Maori_word,English_word,choosen_category_id,Definition,Level,Date,user_id))
         con.commit()
         con.close()
-        return redirect('/login')
     error = request.args.get('error')
 
     if error == None:
