@@ -18,21 +18,27 @@
 
 		<nav>
 			<ul>
+                {% if logged_in %}
+                    <div class="dropdown">
+                        <button class="dropbtn">Admin</button>
+                        <div class="dropdown-content">
+                            <li><a href = "/add_category"> Add categories</a></li>
+                            <li><a href = "/add_words/{{ categories[0][1] }}"> Add words</a></li>
+                        </div>
+                    </div>
+                <p style = "color:white;">----------------</p>
+                {% endif %}
+
                 <li><a href="\">Home</a></li>
                 {% for category in categories %}
                     <li><a href="/category/{{ category[1] }}">{{ category[0] }}</a></li>
                 {% endfor %}
-
-                <div>
-                    <a>----------------</a>
-                    {% if logged_in %}
-                    <li><a href = "/admin"> Admin</a></li>
-                    <li><a href = "/add_words/{{ categories[0][1] }}"> add word</a></li>
-                    <li><a href = "/logout">log out</a></li>
-                    {% else %}
+                <a>----------------</a>
+                {% if logged_in %}
+                     <li><a href = "/logout">log out</a></li>
+                {% else %}
                     <li><a href = "/login">log in</a></li>
-                    {% endif %}
-                </div>
+                {% endif %}
 			</ul>
 		</nav>
 

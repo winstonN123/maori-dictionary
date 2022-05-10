@@ -9,7 +9,6 @@ app.secret_key="valorant"
 DATABASE="dictionary.db"
 bcrypt=Bcrypt(app)
 
-
 def create_connection(db_file):
     """create a connection to the sqlite db"""
     try:
@@ -42,11 +41,13 @@ def categories():
 
 def username():
     con = create_connection(DATABASE)
-    query = "SELECT firstname,lastname FROM login"
+    query = "SELECT id,firstname,lastname FROM login"
     cur = con.cursor()
     cur.execute(query)
     username = cur.fetchall()
+    print(username)
     con.close()
+
     return username
 
 
@@ -65,7 +66,7 @@ def main():
     return render_template("home.html",categories=categories(),logged_in=is_logged_in(),wordbank_list=wordbank_list())
 
 
-@app.route("/admin",methods=['POST','GET'])
+@app.route("/add_category",methods=['POST','GET'])
 def admin():
     if request.method == "POST":
         print(request.form)
@@ -82,7 +83,7 @@ def admin():
 
         con.commit()
         con.close()
-    return render_template('admin.html',logged_in=is_logged_in(),categories=categories())
+    return render_template('add_category.html', logged_in=is_logged_in(), categories=categories())
 
 
 @app.route("/login",methods=['POST','GET'])
@@ -173,14 +174,14 @@ def category_pages(category_id):
     return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id,logged_in=is_logged_in())
 
 
-@app.route('/word/<word_id>')
-def word_page(word_id):
+@app.route('/word/<word_id>/<cofirmation>')
+def word_page(word_id,confirmation):
     try:
         word_id = int(word_id)
     except ValueError:
         print("{} is not an integer".format(word_id))
         return redirect("/menu?error=Invalid+product+id")
-    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id,logged_in=is_logged_in(),username=username())
+    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id,logged_in=is_logged_in(),username=username(),)
 
 
 @app.route("/add_words/<choosen_category_id>",methods=['POST','GET'])
@@ -194,6 +195,7 @@ def add_words(choosen_category_id):
         Date = datetime.now()
         choosen_category_id = choosen_category_id
         user_id = session.get('user_id')
+
         print(user_id)
         con=create_connection(DATABASE)
         try:

@@ -14,7 +14,11 @@
             <img src =" static/images/{{ wordbank[6] }}">
             {% if logged_in %}
                 <p> Word id : {{ wordbank[0] }}</p>
-                <p> Added by: {{ username[0][0] }} {{ username[0][1] }}</p>
+                {% for user_index in username %}
+                    {%  if user_index[0] == wordbank[8] %}
+                        <p> Added by: {{ user_index[1]}} {{ user_index[2] }}</p>
+                    {% endif %}
+                {% endfor %}
                 <p>  Date added: {{ wordbank[7] }}</p>
             {% endif %}
         {% endif %}
