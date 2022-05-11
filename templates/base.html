@@ -18,12 +18,12 @@
 
 		<nav>
 			<ul>
-                {% if logged_in %}
+                {% if is_admin %}
                     <div class="dropdown">
                         <button class="dropbtn">Admin</button>
                         <div class="dropdown-content">
                             <li><a href = "/add_category"> Add categories</a></li>
-                            <li><a href = "/add_words/{{ categories[0][1] }}"> Add words</a></li>
+                            <li><a href = "/add_words"> Add words</a></li>
                         </div>
                     </div>
                 <p style = "color:white;">----------------</p>
@@ -31,9 +31,9 @@
 
                 <li><a href="\">Home</a></li>
                 {% for category in categories %}
-                    <li><a href="/category/{{ category[1] }}">{{ category[0] }}</a></li>
+                    <li><a href="/category/{{ category[1] }}/0">{{ category[0] }}</a></li>
                 {% endfor %}
-                <a>----------------</a>
+                 <p style = "color:white;">----------------</p>
                 {% if logged_in %}
                      <li><a href = "/logout">log out</a></li>
                 {% else %}

@@ -6,6 +6,16 @@
 
 {% block main %}
 <table class = "cart-table">
+    {% if is_admin %}
+        <a href ="/category/{{ category_id }}/delete">Delete this Category</a>
+        {% if confirmation == "delete" %}
+            <div>
+                <a href = "/category/{{ category_id }}/yes">Yes</a>
+                <a href = "/category/{{ category_id }}/no">No</a>
+            </div>
+        {% endif %}
+    {% endif %}
+
     <thead>
         <tr>
             <td>Maori</td>
@@ -18,7 +28,7 @@
     {% for wordbank in wordlist %}
         {%  if wordbank[3] == category_id %}
         <tr>
-            <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>
+            <td><a href = "/word/{{ wordbank[0] }}/0/{{ wordbank[3]}}">{{ wordbank[1] }}</a></td>
             <td><a>{{ wordbank[2] }}</a></td>
             <td><a>{{ wordbank[5] }}</a></td>
         </tr>
