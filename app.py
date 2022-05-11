@@ -204,9 +204,9 @@ def word_page(word_id,confirmation,category_id):
         cur.execute(query,(word_id,))
         con.commit()
         con.close()
-        return redirect("/category/{}".format(category_id))
+        return redirect("/category/{}/0".format(category_id))
     if confirmation == "no":
-        return redirect("/category/{}".format(category_id))
+        return redirect("/category/{}/0".format(category_id))
 
     if request.method == 'POST':
         print(request.form)
