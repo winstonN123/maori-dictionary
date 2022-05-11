@@ -28,10 +28,12 @@
                     <p> Word id : {{ wordbank[0] }}</p>
                     {% for user_index in username %}
                         {%  if user_index[0] == wordbank[8] %}
-                            <p> Added by: {{ user_index[1]}} {{ user_index[2] }}</p>
+                            <p> Added by: {{ user_index[1]}} {{ user_index[2] }} ,Date added: {{ wordbank[7] }}</p>
+                        {% endif %}
+                        {%  if user_index[0] == wordbank[9] %}
+                            <p> Last edited by: {{ user_index[1]}} {{ user_index[2] }} ,Date edited: {{ wordbank[10] }}</p>
                         {% endif %}
                     {% endfor %}
-                    <p>  Date added: {{ wordbank[7] }}</p>
                 {% endif %}
             {% endif %}
     </div>
@@ -68,8 +70,7 @@
                                 </div>
 
                         <div class ="form-group">
-                            <div class = "form-label">Submit</div>
-                                <div class ="form-element"><input type = "submit" value="submit"></div>
+                                <div class ="form-element"><input type = "submit" value="Modify word"></div>
                             </div>
                     </form>
                 {% endif %}

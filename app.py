@@ -8,6 +8,7 @@ app=Flask(__name__)
 app.secret_key="valorant"
 DATABASE="dictionary.db"
 bcrypt=Bcrypt(app)
+error = ""
 
 def create_connection(db_file):
     """create a connection to the sqlite db"""
@@ -19,6 +20,7 @@ def create_connection(db_file):
         print(error)
 
     return None
+
 
 
 def is_logged_in():
@@ -61,7 +63,7 @@ def username():
 
 def wordbank_list():
     con = create_connection(DATABASE)
-    query = "SELECT id,maori,english,categories,definition,level,image,date,user FROM wordbank"
+    query = "SELECT id,maori,english,categories,definition,level,image,date,user,last_modify_by,editted_date FROM wordbank"
     cur = con.cursor()
     cur.execute(query,)
     wordbank_list = cur.fetchall()
@@ -103,7 +105,12 @@ def login():
         print(request.form)
         email = request.form['email'].lower().strip()
         password=request.form['password'].strip()
-        query = """SElECT id,firstname,password,admin FROM login WHERE email = ?"""
+
+        try:
+            query = """SElECT id,firstname,password,admin FROM login WHERE email = ?"""
+        except sqlite3.IntegrityError as e:
+            print(e)
+
         con = create_connection(DATABASE)
         cur = con.cursor()
         cur.execute(query,(email,))
@@ -131,6 +138,7 @@ def login():
 
 @app.route("/signup",methods=['POST','GET'])
 def signup():
+    global error
     if is_logged_in():
         return redirect('/')
     if request.method == 'POST':
@@ -140,29 +148,28 @@ def signup():
         email=request.form.get('email')
         password=request.form.get('password')
         Password_check=request.form.get('confirm_password')
+        Admin = request.form.get('Admin')
 
         if Password_check != password:
+            error = "passwords do not match"
             return redirect('/signup?error=Password+dont+match')
 
         hashed_password=bcrypt.generate_password_hash(password)
 
         con=create_connection(DATABASE)
-
-        try:
-            query="INSERT INTO login (firstname,lastname,email,password) VALUES (?,?,?,?)"
-        except sqlite3.IntegrityError:
-            redirect('/signup?error=Passwords+dont+match')
-
+        query="INSERT INTO login (firstname,lastname,email,password,admin) VALUES (?,?,?,?,?)"
         cur=con.cursor()
-        cur.execute(query,(firstname,lastname,email,hashed_password))
+        try:
+            cur.execute(query,(firstname,lastname,email,hashed_password,Admin))
+        except sqlite3.IntegrityError as e:
+            print(e)
+            error = "email already used"
+            return redirect('/signup')
         con.commit()
         con.close()
         return redirect('/login')
-    error=request.args.get('error')
 
-    if error == None:
-        error=""
-    return render_template("signup.html",error=error,logged_in=is_logged_in(),categories=categories(),is_admin=is_admin())
+    return render_template("signup.html",logged_in=is_logged_in(),categories=categories(),is_admin=is_admin(), error=error)
 
 
 @app.route('/logout',methods=['POST','GET'])
@@ -173,7 +180,7 @@ def logout():
     return redirect(request.referrer + '?message=See+you+next+time!')
 
 
-@app.route('/category/<category_id>/<confirmation>')
+@app.route('/category/<category_id>/<confirmation>',methods=['POST','GET'])
 def category_pages(category_id,confirmation):
     if confirmation == "yes":
         query="DELETE FROM category WHERE id = ?"
@@ -185,12 +192,37 @@ def category_pages(category_id,confirmation):
         return redirect("/")
     if confirmation == "no":
         return redirect("/category/{}/0".format(category_id))
-
     try:
         category_id = int(category_id)
     except ValueError:
         print("{} is not an integer".format(category_id))
         return redirect("/menu?error=Invalid+product+id")
+
+    if request.method == 'POST':
+        print(request.form)
+        Maori_word = request.form.get('Maori').strip().title()
+        English_word = request.form.get('English').strip().title()
+        Level = request.form.get('Level')
+        Definition = request.form.get('Definition')
+        Date = datetime.now()
+        user_id = session.get('user_id')
+
+        print(user_id)
+        con=create_connection(DATABASE)
+        try:
+            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user) VALUES (?,?,?,?,?,?,?)"
+        except sqlite3.IntegrityError:
+            redirect('/signup?error=Passwords+dont+match')
+
+        cur = con.cursor()
+        cur.execute(query,(Maori_word,English_word,category_id,Definition,Level,Date,user_id))
+        con.commit()
+        con.close()
+    error = request.args.get('error')
+
+    if error == None:
+        error = ""
+
     return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id,logged_in=is_logged_in(),is_admin=is_admin(),confirmation=confirmation)
 
 
@@ -206,7 +238,7 @@ def word_page(word_id,confirmation,category_id):
         con.close()
         return redirect("/category/{}/0".format(category_id))
     if confirmation == "no":
-        return redirect("/category/{}/0".format(category_id))
+        return redirect("/word/<word_id>/0/{}".format(category_id))
 
     if request.method == 'POST':
         print(request.form)
