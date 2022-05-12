@@ -5,28 +5,23 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-<table class = "cart-table">
-    <thead>
-        <tr>
-            <td>Maori</td>
-            <td>English</td>
-            <td>Catagory</td>
-            <td>Definition</td>
-            <td>Level</td>
-            <td>Image</td>
-        </tr>
-    </thead>
-    <tbody>
-    {% for wordbank in wordbank_list %}
-        <tr>
-            <td><a>{{ wordbank[0] }}</a></td>
-            <td><a>{{ wordbank[1] }}</a></td>
-            <td><a>{{ wordbank[2] }}</a></td>
-            <td><a>{{ wordbank[3] }}</a></td>
-            <td><a>{{ wordbank[4] }}</a></td>
-            <td><img src =" static/images/{{ wordbank[5] }}.jpg"></td>
-        </tr>
+    <form class = "dataForm" method = "GET">
+        <div class ="form-group">
+            <div class ="form-label">Search Bar</div>
+                <div class = "form-element"><input type = "search" name ="Search" id = "Search" required></div>
+        </div>
+        <div class ="form-group">
+                <div class ="form-element"><input type = "submit" value="Submit"></div>
+        </div>
+    </form>
+
+    {% for wordbank in Search %}
+           <div>
+                <a href = "/word/{{ wordbank[0] }}/0/{{ wordbank[3]}}">{{ wordbank[1] }}</a>
+                <a>{{ wordbank[2] }}</a>
+                <a>{{ wordbank[5] }}</a>
+           </div>
     {% endfor %}
-    </tbody>
-</table>
+
+
 {% endblock %}
