@@ -6,11 +6,11 @@
 
 {% block main %}
     {% if is_admin %}
-        <a href ="/word/{{ word_id }}/delete/{{ category_id}}">Delete this word</a>
+        <a href ="/word/{{ word_id }}?confirmation=delete">Delete this word</a>
         {% if confirmation == "delete" %}
             <div>
-                <a href = "/word/{{ word_id }}/yes/{{ category_id }}">Yes</a>
-                <a href = "/word/{{ word_id }}/no/{{ category_id }}">No</a>
+                <a href = "/word/{{ word_id }}?confirmation=yes">Yes</a>
+                <a href = "/word/{{ word_id }}?confirmation=no">No</a>
             </div>
         {% endif %}
     {% endif %}

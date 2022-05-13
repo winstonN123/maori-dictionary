@@ -9,6 +9,7 @@ app.secret_key="valorant"
 DATABASE="dictionary.db"
 bcrypt=Bcrypt(app)
 
+
 def create_connection(db_file):
     """create a connection to the sqlite db"""
     try:
@@ -31,16 +32,15 @@ def is_logged_in():
 
 def is_admin():
     if session.get('admin') != 1:
-        print("not admin ")
-        return False
+        print("denied")
+        return redirect('/?=you+do+not+have+access+to+this+action') and False
     else:
-        print("is admin")
         return True
 
 
 def categories():
     con = create_connection(DATABASE)
-    query = "SELECT category,id FROM category"
+    query = "SELECT category,id FROM category ORDER BY category ASC"
     cur = con.cursor()
     cur.execute(query)
     category_list = cur.fetchall()
@@ -61,22 +61,33 @@ def username():
 
 def wordbank_list():
     con = create_connection(DATABASE)
-    query = "SELECT id,maori,english,categories,definition,level,image,date,user FROM wordbank"
+    query = "SELECT * FROM wordbank ORDER BY maori ASC"
     cur = con.cursor()
     cur.execute(query,)
     wordbank_list = cur.fetchall()
     con.close()
     return wordbank_list
 
-
-@app.route('/')
+@app.route('/',methods=['POST','GET'])
 def main():
-    return render_template("home.html",categories=categories(),logged_in=is_logged_in(),wordbank_list=wordbank_list(),is_admin=is_admin())
+    if request.method == "GET":
+        Search =str("{}{}".format(request.args.get('Search') ,"%"))
+        con = create_connection(DATABASE)
+        query = "SELECT * FROM wordbank WHERE english LIKE ?"
+        cur = con.cursor()
+        cur.execute(query,(Search,))
+        Search_results = cur.fetchall()
+        con.close()
+        if len(Search_results):
+            print(len)
+            Search_results = "None"
+    return render_template("home.html",categories=categories(),logged_in=is_logged_in(),Search_results=Search_results,is_admin=is_admin())
 
 
 @app.route("/add_category",methods=['POST','GET'])
-def admin():
+def add_category():
     if request.method == "POST":
+        is_admin()
         print(request.form)
         category = request.form.get('add_category').strip().title()
         con = create_connection(DATABASE)
@@ -140,6 +151,7 @@ def signup():
         email=request.form.get('email')
         password=request.form.get('password')
         Password_check=request.form.get('confirm_password')
+        Admin = request.form.get('Admin')
 
         if Password_check != password:
             return redirect('/signup?error=Password+dont+match')
@@ -149,12 +161,12 @@ def signup():
         con=create_connection(DATABASE)
 
         try:
-            query="INSERT INTO login (firstname,lastname,email,password) VALUES (?,?,?,?)"
+            query="INSERT INTO login (firstname,lastname,email,password,admin) VALUES (?,?,?,?,?)"
         except sqlite3.IntegrityError:
             redirect('/signup?error=Passwords+dont+match')
 
         cur=con.cursor()
-        cur.execute(query,(firstname,lastname,email,hashed_password))
+        cur.execute(query,(firstname,lastname,email,hashed_password,Admin))
         con.commit()
         con.close()
         return redirect('/login')
@@ -173,9 +185,11 @@ def logout():
     return redirect(request.referrer + '?message=See+you+next+time!')
 
 
-@app.route('/category/<category_id>/<confirmation>')
-def category_pages(category_id,confirmation):
+@app.route('/category/<category_id>')
+def category_pages(category_id):
+    confirmation = str(request.args.get('confirmation'))
     if confirmation == "yes":
+        is_admin()
         query="DELETE FROM category WHERE id = ?"
         con=create_connection(DATABASE)
         cur=con.cursor()
@@ -184,7 +198,7 @@ def category_pages(category_id,confirmation):
         con.close()
         return redirect("/")
     if confirmation == "no":
-        return redirect("/category/{}/0".format(category_id))
+        return redirect("/category/{}".format(category_id))
 
     try:
         category_id = int(category_id)
@@ -194,19 +208,25 @@ def category_pages(category_id,confirmation):
     return render_template("category.html",wordlist=wordbank_list(),categories=categories(),category_id=category_id,logged_in=is_logged_in(),is_admin=is_admin(),confirmation=confirmation)
 
 
-@app.route('/word/<word_id>/<confirmation>/<category_id>',methods=['POST','GET'])
-def word_page(word_id,confirmation,category_id):
+@app.route('/word/<word_id>',methods=['POST','GET'])
+def word_page(word_id):
+    confirmation = str(request.args.get('confirmation'))
     word_id = int(word_id)
+    wordbank = wordbank_list()
+    for word in wordbank:
+        if word[0] == word_id:
+            category_id = word[3]
     if confirmation == "yes":
+        is_admin()
         query="DELETE FROM wordbank WHERE id = ?"
         con=create_connection(DATABASE)
         cur=con.cursor()
         cur.execute(query,(word_id,))
         con.commit()
         con.close()
-        return redirect("/category/{}/0".format(category_id))
+        return redirect("/category/{}".format(category_id))
     if confirmation == "no":
-        return redirect("/category/{}/0".format(category_id))
+        return redirect("/category/{}".format(category_id))
 
     if request.method == 'POST':
         print(request.form)
@@ -227,7 +247,7 @@ def word_page(word_id,confirmation,category_id):
         con.commit()
         con.close()
 
-    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id,logged_in=is_logged_in(),username=username(),confirmation=confirmation,category_id=category_id,is_admin=is_admin())
+    return render_template("word.html",wordlist=wordbank_list(),categories=categories(),word_id=word_id,logged_in=is_logged_in(),username=username(),confirmation=confirmation,is_admin=is_admin())
 
 
 @app.route("/add_words",methods=['POST','GET'])

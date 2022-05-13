@@ -8,20 +8,32 @@
     <form class = "dataForm" method = "GET">
         <div class ="form-group">
             <div class ="form-label">Search Bar</div>
-                <div class = "form-element"><input type = "search" name ="Search" id = "Search" required></div>
+                <div class = "form-element"><input type = "search" name ="Search" id = "Search"></div>
         </div>
         <div class ="form-group">
                 <div class ="form-element"><input type = "submit" value="Submit"></div>
         </div>
     </form>
 
-    {% for wordbank in Search %}
-           <div>
-                <a href = "/word/{{ wordbank[0] }}/0/{{ wordbank[3]}}">{{ wordbank[1] }}</a>
-                <a>{{ wordbank[2] }}</a>
-                <a>{{ wordbank[5] }}</a>
-           </div>
-    {% endfor %}
-
+    {% if Search_results == "None" %}
+        <p>Nothing found, make sure you spelt it correctly!</p>
+    {% else %}
+        {% for wordbank in Search_results %}
+        <table>
+            <thead>
+                    <td><p>Maori</p></td>
+                    <td><p>English</p></td>
+                    <td><p>Level</p></td>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href = "/word/{{ wordbank[0] }}/0/{{ wordbank[3]}}">{{ wordbank[1] }}</a></td>
+                    <td><a>{{ wordbank[2] }}</a></td>
+                    <td><a>{{ wordbank[5] }}</a></td>
+                </tr>
+            </tbody>
+        </table>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

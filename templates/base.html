@@ -31,7 +31,7 @@
 
                 <li><a href="\">Home</a></li>
                 {% for category in categories %}
-                    <li><a href="/category/{{ category[1] }}/0">{{ category[0] }}</a></li>
+                    <li><a href="/category/{{ category[1] }}">{{ category[0] }}</a></li>
                 {% endfor %}
                  <p style = "color:white;">----------------</p>
                 {% if logged_in %}
