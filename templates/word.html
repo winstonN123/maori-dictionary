@@ -5,6 +5,12 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
+    {% for wordbank in wordlist %}
+            {%  if wordbank[0] == word_id %}
+                <h2>{{ wordbank[1] }}</h2>
+            {% endif %}
+    {% endfor %}
+
     {% if is_admin %}
         <a href ="/word/{{ word_id }}?confirmation=delete">Delete this word</a>
         {% if confirmation == "delete" %}
@@ -35,46 +41,45 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
-            {% endif %}
     </div>
     <div>
-        {%  if wordbank[0] == word_id %}
-                {% if is_admin %}
-                    <form class = "dataForm" method = "POST">
-                           <div class ="form-group">
-                                <div class ="form-label"> Modify maori word:</div>
-                                    <div class = "form-element"><input  value = "{{ wordbank[1] }}" type = "text" name ="Modify_maori" id = "Modify_maori" ></div>
-                           </div>
 
-                            <div class ="form-group">
-                                <div class ="form-label"> Modify english word:</div>
-                                    <div class = "form-element"><input value = "{{ wordbank[2] }} " type = "text" name ="Modify_english" id = "Modify_english" ></div>
-                            </div>
-
-                            <div class ="form-group">
-                                <div class ="form-label">Modify level:</div>
-                                    {% for i in range(10) %}
-                                        {% if i + 1  == wordbank[5] %}
-                                            <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}" checked >
-                                            <label>{{ i + 1 }}</label>
-                                        {% else %}
-                                            <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}"  >
-                                            <label>{{ i + 1 }}</label>
-                                        {% endif %}
-                                    {% endfor %}
-                            </div>
-
-                            <div class ="form-group">
-                                <div class ="form-label"> Modify definition:</div>
-                                    <div class = "form-element"><input value = "{{ wordbank[4] }}" type = "text" name ="Modify_definition" id = "Modify_Definition" ></div>
-                                </div>
-
-                            <div class = "error" > {{  error }} </div>
+            {% if is_admin %}
+                <form class = "dataForm" method = "POST">
+                       <div class ="form-group">
+                            <div class ="form-label"> Modify maori word:</div>
+                                <div class = "form-element"><input  value = "{{ wordbank[1] }}" type = "text" name ="Modify_maori" id = "Modify_maori" ></div>
+                       </div>
 
                         <div class ="form-group">
-                                <div class ="form-element"><input type = "submit" value="Modify word"></div>
+                            <div class ="form-label"> Modify english word:</div>
+                                <div class = "form-element"><input value = "{{ wordbank[2] }} " type = "text" name ="Modify_english" id = "Modify_english" ></div>
+                        </div>
+
+                        <div class ="form-group">
+                            <div class ="form-label">Modify level:</div>
+                                {% for i in range(10) %}
+                                    {% if i + 1  == wordbank[5] %}
+                                        <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}" checked >
+                                        <label>{{ i + 1 }}</label>
+                                    {% else %}
+                                        <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}"  >
+                                        <label>{{ i + 1 }}</label>
+                                    {% endif %}
+                                {% endfor %}
+                        </div>
+
+                        <div class ="form-group">
+                            <div class ="form-label"> Modify definition:</div>
+                                <div class = "form-element"><input value = "{{ wordbank[4] }}" type = "text" name ="Modify_definition" id = "Modify_Definition" ></div>
                             </div>
-                    </form>
+
+                        <div class = "error" > {{  error }} </div>
+
+                    <div class ="form-group">
+                            <div class ="form-element"><input type = "submit" value="Modify word"></div>
+                        </div>
+                </form>
                 {% endif %}
             {% endif %}
         {% endfor %}

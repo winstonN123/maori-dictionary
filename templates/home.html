@@ -5,6 +5,8 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
+    <h2>Search</h2>
+
     <form class = "dataForm" method = "GET">
         <div class ="form-group">
             <div class ="form-label">Search Bar</div>
@@ -21,22 +23,25 @@
     {% if Search_results == "None" %}
         <p>Nothing found, make sure you spelt it correctly!</p>
     {% else %}
-        {% for wordbank in Search_results %}
         <table>
             <thead>
                     <td><p>Maori</p></td>
                     <td><p>English</p></td>
                     <td><p>Level</p></td>
             </thead>
+
             <tbody>
-                <tr>
-                    <td><a href = "/word/{{ wordbank[0] }}/0/{{ wordbank[3]}}">{{ wordbank[1] }}</a></td>
-                    <td><a>{{ wordbank[2] }}</a></td>
-                    <td><a>{{ wordbank[5] }}</a></td>
-                </tr>
+                {% for wordbank in Search_results %}
+                    <tr>
+                        <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>
+                        <td><a>{{ wordbank[2] }}</a></td>
+                        <td><a>{{ wordbank[5] }}</a></td>
+
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
-        {% endfor %}
+
     {% endif %}
 
 {% endblock %}

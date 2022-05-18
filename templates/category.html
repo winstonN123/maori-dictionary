@@ -5,6 +5,13 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
+    {% for category in categories %}
+            {%  if category[1] == category_id %}
+                <h2>{{ category[0] }}</h2>
+            {% endif %}
+    {% endfor %}
+
+
     {% if is_admin %}
         <a href ="/category/{{ category_id }}?confirmation=delete">Delete this Category</a>
         {% if confirmation == "delete" %}
@@ -15,6 +22,12 @@
         {% endif %}
 
         <form class = "dataForm" method = "POST">
+            <div class ="form-group">
+                <div class ="form-label">Modify Category :</div>
+                    <div class = "form-element"><input type = "text" name ="modify_category" id = "modify_category" value=""></div>
+            </div>
+
+
             <div class ="form-group">
                 <div class ="form-label">Maori word:</div>
                     <div class = "form-element"><input type = "text" name ="Maori" id = "Maori" required></div>
