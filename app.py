@@ -73,37 +73,8 @@ def wordbank_list():  # queries all the columns into a list
     con.close()
     return wordbank_list
 
-
-def adding_words(page_url):
-    print(request.form)
-    maori_word = request.form.get('Maori').strip().title()  # gets data from forms
-    english_word = request.form.get('English').strip().title()
-    level = request.form.get('Level')
-    definition = request.form.get('Definition')
-    date = datetime.now()
-    category_id = request.form.get('Categories')
-    user_id = session.get('user_id')
-
-    if valid_characters(maori_word) or valid_characters(english_word) or valid_characters(definition):  # checks if they contain inputs
-        return redirect('{}?error=input+cannot+contain+numbers'.format(page_url))
-
-    con = create_connection(DATABASE)
-    query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) VALUES (?,?,?,?,?,?,?,?)"
-    cur = con.cursor()
-
-    try:
-        cur.execute(query, (maori_word, english_word, category_id, definition, level, date, user_id, "noimage.png"))  # inserts it into database
-    except sqlite3.IntegrityError as e:
-        print(e)
-        print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
-        return redirect('{}?error=Something+went+very+very+wrong'.format(page_url))
-
-    con.commit()
-    con.close()
-
-
 @app.route('/', methods=['POST', 'GET'])
-def main(): # renders the homepage witch contains a search bar
+def main():  # renders the homepage witch contains a search bar
     if request.method == "GET":
         search = str("{}{}".format(request.args.get('Search'), "%"))  # pulls data from the url
         con = create_connection(DATABASE)
@@ -113,12 +84,13 @@ def main(): # renders the homepage witch contains a search bar
         search_results = cur.fetchall()  # and puts it into a list
         con.close()
 
-    if len(search_results) == 0: # checks if the query actually finds anything
+    if len(search_results) == 0:  # checks if the query actually finds anything
         print(len)
         search_results = "None"
 
     return render_template("home.html", categories=categories(), logged_in=is_logged_in(),
                            Search_results=search_results, is_admin=is_admin())
+
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():  # renders the login page
@@ -136,6 +108,7 @@ def login():  # renders the login page
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchall()  # and puts them into a list
+        con.commit()
         con.close()
 
         try:
@@ -184,7 +157,7 @@ def signup():  # renders the signup page
         if valid_characters(firstname) or valid_characters(lastname):  # checks if there is any numbers
             return redirect('/signup?error=input+cannot+contain+characters')  # in their first or last names
 
-        if len(firstname) < 2 or len(lastname) < 2: # checks if their last and first name has to be longer than two characters
+        if len(firstname) < 2 or len(lastname) < 2:  # checks if their last and first name has to be longer than two characters
             return redirect('/signup?error=firstname+or+lastname+must+both+contain+more+than+two+characters')
 
         hashed_password = bcrypt.generate_password_hash(password)  # encrypts the password with hash
@@ -222,7 +195,6 @@ def logout():  # the function for the user to sign out
 def category_pages(category_id):  # rendering the category pages
     error = request.args.get('error')  # gets the error data from url
     confirmation = str(request.args.get('confirmation'))  # gets the confirmation data from url
-    page_url = '/category/{}'.format(category_id)
     try:
         category_id = int(category_id)  # checks if there is this category page
     except ValueError:  # if not, redirects them to home
@@ -249,7 +221,55 @@ def category_pages(category_id):  # rendering the category pages
         return redirect("/category/{}".format(category_id))
 
     if request.method == 'POST':
-        adding_words(page_url)  # calls the adding words function
+        method = request.form.get('submit_type')
+        if method == 'add word':
+            print(request.form)
+            new_maori_word = request.form.get('Maori').strip().title()  # gets data from forms
+            new_english_word = request.form.get('English').strip().title()
+            new_level = request.form.get('Level')
+            new_definition = request.form.get('Definition')
+            date = datetime.now()
+            user_id = session.get('user_id')
+
+            if valid_characters(new_maori_word) or valid_characters(new_english_word) or valid_characters(
+                    new_definition):  # checks if they contain inputs
+                return redirect('/category/{}?error=input+cannot+contain+numbers'.format(category_id))
+
+            con = create_connection(DATABASE)
+            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) VALUES (?,?,?,?,?,?,?,?)"
+            cur = con.cursor()
+
+            try:
+                cur.execute(query, (
+                new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id,
+                "noimage.png"))  # inserts it into database
+            except sqlite3.IntegrityError as e:
+                print(e)
+                print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
+                return redirect('/category/{}?error=Something+went+very+very+wrong'.format(category_id))
+
+            con.commit()
+            con.close()
+        elif method == 'modify category':
+            modify_category = request.form.get('modify_category').strip().title()
+
+            if valid_characters(modify_category):
+                return redirect('/category/{}?error=input+cannot+contain+characters'.format(category_id))
+
+            con = create_connection(DATABASE)
+            query = "UPDATE category SET category = ? WHERE id = ? "  # modifies that specific word with new data
+            cur = con.cursor()
+
+            try:
+                cur.execute(query,(modify_category,category_id))
+            except sqlite3.IntegrityError as e:
+                print(e)
+                print("### PROBLEM UPDATING DATABASE- FOREIGN KEY ###")
+                return redirect('/category/{}?error=Something+went+very+very+wrong'.format(category_id))
+
+            con.commit()
+            con.close()
+
 
     if error is None:
         error = ""
@@ -283,7 +303,7 @@ def word_page(word_id):  # rendering the word pages
         con.commit()
         con.close()
         return redirect("/category/{}".format(category_id))
-    elif confirmation == "no": # if they cancel, it redirects them back
+    elif confirmation == "no":  # if they cancel, it redirects them back
         return redirect("/category/{}".format(category_id))
 
     if request.method == 'POST':
@@ -293,6 +313,7 @@ def word_page(word_id):  # rendering the word pages
         modify_english = request.form.get('Modify_english').strip().title()
         modify_level = request.form.get('Modify_level')
         modify_definition = request.form.get('Modify_definition')
+        modify_category = request.form.get('Modify_category')
         date = datetime.now()
         user_id = session.get('user_id')
 
@@ -301,11 +322,11 @@ def word_page(word_id):  # rendering the word pages
 
         con = create_connection(DATABASE)
         query = "UPDATE wordbank SET maori = ? ,english = ? ,definition = ? ,level = ? " \
-                ",last_modify_by = ? ,editted_date = ?  WHERE id = ?"  # modifies that specific word with new data
+                ",category,last_modify_by = ? ,editted_date = ?,  WHERE id = ?"  # modifies that specific word with new data
         cur = con.cursor()
 
         try:
-            cur.execute(query, (modify_maori, modify_english, modify_definition, modify_level, user_id, date, word_id))
+            cur.execute(query, (modify_maori, modify_english, modify_definition, modify_level,modify_category, user_id, date, word_id))
         except sqlite3.IntegrityError as e:
             print(e)
             print("### PROBLEM UPDATING DATABASE- FOREIGN KEY ###")
@@ -313,21 +334,48 @@ def word_page(word_id):  # rendering the word pages
 
         con.commit()
         con.close()
+
     if error is None:
         error = ""
 
     return render_template("word.html", wordlist=wordbank_list(), categories=categories(), word_id=word_id,
                            logged_in=is_logged_in(), username=username(), confirmation=confirmation,
-                           is_admin=is_admin(), error=error)
+                           is_admin=is_admin(), error=error,category_id=category_id)
 
 
 @app.route("/add_words", methods=['POST', 'GET'])
 def add_words_page():  # renders the add words page
     error = request.args.get('error')
-    page_url = '/add_words'
+
 
     if request.method == 'POST':
-        adding_words(page_url)  # calls the adding words function
+        print(request.form)
+        new_maori_word = request.form.get('Maori').strip().title()  # gets data from forms
+        new_english_word = request.form.get('English').strip().title()
+        new_level = request.form.get('Level')
+        new_definition = request.form.get('Definition')
+        date = datetime.now()
+        category_id = request.form.get('Categories')
+        user_id = session.get('user_id')
+
+        if valid_characters(new_maori_word) or valid_characters(new_english_word) or valid_characters(
+                new_definition):  # checks if they contain inputs
+            return redirect('/add_words?error=input+cannot+contain+numbers')
+
+        con = create_connection(DATABASE)
+        query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) VALUES (?,?,?,?,?,?,?,?)"
+        cur = con.cursor()
+
+        try:
+            cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id,
+                                "noimage.png"))  # inserts it into database
+        except sqlite3.IntegrityError as e:
+            print(e)
+            print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
+            return redirect('/add_words?error=Something+went+very+very+wrong')
+
+        con.commit()
+        con.close()
 
     if error is None:
         error = ""
@@ -366,6 +414,7 @@ def add_category():  # renders the add category page
 
     return render_template('add_category.html', logged_in=is_logged_in(), categories=categories(), is_admin=is_admin(),
                            error=error)
+
 
 if __name__ == '__main__':
     app.run()

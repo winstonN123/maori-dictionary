@@ -6,28 +6,38 @@
 
 {% block main %}
     {% for category in categories %}
-            {%  if category[1] == category_id %}
-                <h2>{{ category[0] }}</h2>
-            {% endif %}
+        {%  if category[1] == category_id %}
+            <h2>{{ category[0] }}</h2>
+        {% endif %}
     {% endfor %}
 
+        {% if is_admin %}
+            <a href ="/category/{{ category_id }}?confirmation=delete">Delete this Category</a>
+            {% if confirmation == "delete" %}
+                <div>
+                    <a href = "/category/{{ category_id }}?confirmation=yes">Yes</a>
+                    <a href = "/category/{{ category_id }}?confirmation=no">No</a>
+                </div>
+            {% endif %}
 
-    {% if is_admin %}
-        <a href ="/category/{{ category_id }}?confirmation=delete">Delete this Category</a>
-        {% if confirmation == "delete" %}
-            <div>
-                <a href = "/category/{{ category_id }}?confirmation=yes">Yes</a>
-                <a href = "/category/{{ category_id }}?confirmation=no">No</a>
-            </div>
-        {% endif %}
-
+        {% for category in categories %}
+            {%  if category[1] == category_id %}
         <form class = "dataForm" method = "POST">
             <div class ="form-group">
                 <div class ="form-label">Modify Category :</div>
-                    <div class = "form-element"><input type = "text" name ="modify_category" id = "modify_category" value=""></div>
+                    <div class = "form-element"><input type = "text" name ="modify_category" id = "modify_category" value="{{ category[0] }}"></div>
             </div>
+            {% endif %}
+        {% endfor %}
 
+            <input type="hidden" name="submit_type" value="modify category">
 
+            <div class ="form-group">
+                    <div class ="form-element"><input type = "submit" name = "Modify category" value="Modify category"></div>
+            </div>
+        </form>
+
+        <form class = "dataForm" method = "POST">
             <div class ="form-group">
                 <div class ="form-label">Maori word:</div>
                     <div class = "form-element"><input type = "text" name ="Maori" id = "Maori" required></div>
@@ -54,8 +64,10 @@
 
             <div class = "error" > {{  error }} </div>
 
+            <input type="hidden" name="submit_type" value="add word">
+
             <div class ="form-group">
-                    <div class ="form-element"><input type = "submit" value="Add word"></div>
+                    <div class ="form-element"><input type = "submit" name ="Add word" value="Add word"></div>
             </div>
         </form>
     {% endif %}
