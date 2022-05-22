@@ -47,18 +47,6 @@
             {% if is_admin %}
                 <form class = "dataForm" method = "POST">
                     <div class ="form-group">
-                        <div class = "form-element">
-                            {% for category in categories %}
-                                {% if category[1] == category_id %}
-                                <select  name ="Categories" id = "Categories"  value = "{{ category[0] }}">
-                                {% endif %}
-                                    <option value = "{{ category[1] }}">{{ category[0] }}</option>
-                                </select>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class ="form-group">
                             <div class ="form-label"> Modify maori word:</div>
                                 <div class = "form-element"><input  value = "{{ wordbank[1] }}" type = "text" name ="Modify_maori" id = "Modify_maori" ></div>
                        </div>

@@ -77,17 +77,20 @@ def wordbank_list():  # queries all the columns into a list
 def main():  # renders the homepage witch contains a search bar
     if request.method == "GET":
         search = str("{}{}".format(request.args.get('Search'), "%"))  # pulls data from the url
+        print("1231"+search)
         con = create_connection(DATABASE)
         query = "SELECT * FROM wordbank WHERE english LIKE ? OR maori LIKE ?"  # selects data form maori and english
         cur = con.cursor()
         cur.execute(query, (search,search))  # column that is similar to a variable
         search_results = cur.fetchall()  # and puts it into a list
         con.close()
+        method = request.form.get('submit_type')
+        if len(search_results) == 0 and not method == 'search':  # checks if the query actually finds anything and if the search button been used
+            search_results = "Empty"
+        elif len(search_results) == 0 and method == 'search': # checks if the query actually finds something and the search button has been used
+            search_results = "None"
 
-    if len(search_results) == 0:  # checks if the query actually finds anything
-        print(len)
-        search_results = "None"
-
+    print(search_results)
     return render_template("home.html", categories=categories(), logged_in=is_logged_in(),
                            Search_results=search_results, is_admin=is_admin())
 
@@ -313,7 +316,6 @@ def word_page(word_id):  # rendering the word pages
         modify_english = request.form.get('Modify_english').strip().title()
         modify_level = request.form.get('Modify_level')
         modify_definition = request.form.get('Modify_definition')
-        modify_category = request.form.get('Modify_category')
         date = datetime.now()
         user_id = session.get('user_id')
 
@@ -322,11 +324,11 @@ def word_page(word_id):  # rendering the word pages
 
         con = create_connection(DATABASE)
         query = "UPDATE wordbank SET maori = ? ,english = ? ,definition = ? ,level = ? " \
-                ",category,last_modify_by = ? ,editted_date = ?,  WHERE id = ?"  # modifies that specific word with new data
+                ",last_modify_by = ? ,editted_date = ?  WHERE id = ?"  # modifies that specific word with new data
         cur = con.cursor()
 
         try:
-            cur.execute(query, (modify_maori, modify_english, modify_definition, modify_level,modify_category, user_id, date, word_id))
+            cur.execute(query, (modify_maori, modify_english, modify_definition, modify_level, user_id, date, word_id))
         except sqlite3.IntegrityError as e:
             print(e)
             print("### PROBLEM UPDATING DATABASE- FOREIGN KEY ###")

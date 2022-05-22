@@ -13,14 +13,15 @@
                 <div class = "form-element"><input type = "search" name ="Search" id = "Search"></div>
         </div>
 
-
+        <input type="hidden" name="submit_type" value="search">
 
         <div class ="form-group">
                 <div class ="form-element"><input type = "submit" value="Submit"></div>
         </div>
     </form>
-
-    {% if Search_results == "None" %}
+    {% if Search_results == "Empty" %}
+        <p></p>
+    {% elif Search_results == "None" %}
         <p>Nothing found, make sure you spelt it correctly!</p>
     {% else %}
         <table>
@@ -41,7 +42,6 @@
                 {% endfor %}
             </tbody>
         </table>
-
     {% endif %}
 
 {% endblock %}
