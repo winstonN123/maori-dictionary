@@ -87,10 +87,8 @@ def main():  # renders the homepage witch contains a search bar
 
         if len(search_results) == 0 and search == "None%":  # checks if the query actually finds something and the search button has been used
             search_results = "Empty"
-            print("bruh")
         elif len(search_results) == 0:   # checks if the query actually finds anything and if the search button been used
             search_results = "None"
-            print("ttue")
     print(search_results)
     return render_template("home.html", categories=categories(), logged_in=is_logged_in(),
                            Search_results=search_results, is_admin=is_admin())
