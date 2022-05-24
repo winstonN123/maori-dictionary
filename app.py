@@ -75,21 +75,22 @@ def wordbank_list():  # queries all the columns into a list
 
 @app.route('/', methods=['POST', 'GET'])
 def main():  # renders the homepage witch contains a search bar
+
     if request.method == "GET":
         search = str("{}{}".format(request.args.get('Search'), "%"))  # pulls data from the url
-        print("1231"+search)
         con = create_connection(DATABASE)
         query = "SELECT * FROM wordbank WHERE english LIKE ? OR maori LIKE ?"  # selects data form maori and english
         cur = con.cursor()
         cur.execute(query, (search,search))  # column that is similar to a variable
         search_results = cur.fetchall()  # and puts it into a list
         con.close()
-        method = request.form.get('submit_type')
-        if len(search_results) == 0 and not method == 'search':  # checks if the query actually finds anything and if the search button been used
-            search_results = "Empty"
-        elif len(search_results) == 0 and method == 'search': # checks if the query actually finds something and the search button has been used
-            search_results = "None"
 
+        if len(search_results) == 0 and search == "None%":  # checks if the query actually finds something and the search button has been used
+            search_results = "Empty"
+            print("bruh")
+        elif len(search_results) == 0:   # checks if the query actually finds anything and if the search button been used
+            search_results = "None"
+            print("ttue")
     print(search_results)
     return render_template("home.html", categories=categories(), logged_in=is_logged_in(),
                            Search_results=search_results, is_admin=is_admin())
