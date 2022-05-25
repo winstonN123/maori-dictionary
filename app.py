@@ -73,6 +73,7 @@ def wordbank_list():  # queries all the columns into a list
     con.close()
     return wordbank_list
 
+
 @app.route('/', methods=['POST', 'GET'])
 def main():  # renders the homepage witch contains a search bar
 
@@ -172,7 +173,7 @@ def signup():  # renders the signup page
         except sqlite3.IntegrityError as e:
             print(e)
             print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
-            return redirect('/signup/?error=Something+went+very+very+wrong')
+            return redirect('/signup?error=email+used+already')
 
         con.commit()
         con.close()
@@ -197,6 +198,8 @@ def logout():  # the function for the user to sign out
 def category_pages(category_id):  # rendering the category pages
     error = request.args.get('error')  # gets the error data from url
     confirmation = str(request.args.get('confirmation'))  # gets the confirmation data from url
+
+
     try:
         category_id = int(category_id)  # checks if there is this category page
     except ValueError:  # if not, redirects them to home
@@ -214,7 +217,7 @@ def category_pages(category_id):  # rendering the category pages
         except sqlite3.IntegrityError as e:
             print(e)
             print("### PROBLEM DELETING FROM DATABASE- FOREIGN KEY ###")
-            return redirect('/category/?error=Something+went+very+very+wrong'.format(category_id))
+            return redirect('/category/{}?error=Something+went+very+very+wrong'.format(category_id))
 
         con.commit()
         con.close()
@@ -242,9 +245,7 @@ def category_pages(category_id):  # rendering the category pages
             cur = con.cursor()
 
             try:
-                cur.execute(query, (
-                new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id,
-                "noimage.png"))  # inserts it into database
+                cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id,"noimage.png"))  # inserts it into database
             except sqlite3.IntegrityError as e:
                 print(e)
                 print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
@@ -271,7 +272,6 @@ def category_pages(category_id):  # rendering the category pages
 
             con.commit()
             con.close()
-
 
     if error is None:
         error = ""
@@ -347,7 +347,6 @@ def word_page(word_id):  # rendering the word pages
 @app.route("/add_words", methods=['POST', 'GET'])
 def add_words_page():  # renders the add words page
     error = request.args.get('error')
-
 
     if request.method == 'POST':
         print(request.form)

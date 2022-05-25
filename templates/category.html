@@ -71,25 +71,28 @@
             </div>
         </form>
     {% endif %}
-<table>
-    <thead>
-        <tr>
-            <td>Maori</td>
-            <td>English</td>
-            <td>Level</td>
-        </tr>
-    </thead>
-    <tbody>
 
-    {% for wordbank in wordlist %}
-        {%  if wordbank[3] == category_id %}
-        <tr>
-            <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>
-            <td><a>{{ wordbank[2] }}</a></td>
-            <td><a>{{ wordbank[5] }}</a></td>
-        </tr>
-        {% endif %}
-    {% endfor %}
-    </tbody>
-</table>
+
+<table>
+            <thead>
+                <tr>
+                    <td>Maori</td>
+                    <td>English</td>
+                    <td>Level</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for wordbank in wordlist %}
+                {%  if wordbank[3] == category_id %}
+                <tr>
+                    <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>
+                    <td><a>{{ wordbank[2] }}</a></td>
+                    <td><a>{{ wordbank[5] }}</a></td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+    </table>
+
+
 {% endblock %}
