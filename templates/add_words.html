@@ -9,7 +9,7 @@
     <div class ="form-group">
         <div class = "form-element">
             <select  name ="Categories" id = "Categories" >
-                {% for category in categories %}
+                {% for category in categories %} <!-- displays all the categories in the list -->
                     <option value = "{{ category[1] }}">{{ category[0] }}</option>
                 {% endfor %}
             </select>
@@ -29,7 +29,7 @@
 
     <div class ="form-group">
         <div class ="form-label">Level:</div>
-        {% for i in range(10) %}
+        {% for i in range(10) %} <!-- makes a loops to display the 10 radios -->
             <input type = "radio" name = "Level"  value = "{{i + 1 }}"  required>
             <label>{{ i + 1 }}</label>
         {% endfor %}

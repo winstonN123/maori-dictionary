@@ -5,15 +5,15 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-    {% for wordbank in wordlist %}
+    {% for wordbank in wordlist %} <!-- checks through the word list to find the right word -->
             {%  if wordbank[0] == word_id %}
                 <h2>{{ wordbank[1] }}</h2>
             {% endif %}
     {% endfor %}
 
-    {% if is_admin %}
+    {% if is_admin %} <!-- checks if they have admin privileges -->
         <a href ="/word/{{ word_id }}?confirmation=delete">Delete this word</a>
-        {% if confirmation == "delete" %}
+        {% if confirmation == "delete" %} if the confirmation is delete, displays a confirmation
             <div>
                 <a href = "/word/{{ word_id }}?confirmation=yes">Yes</a>
                 <a href = "/word/{{ word_id }}?confirmation=no">No</a>
@@ -23,28 +23,30 @@
 
 
     <div>
-        {% for wordbank in wordlist %}
+        {% for wordbank in wordlist %} <!-- checks the word list for the right word -->
             {%  if wordbank[0] == word_id %}
                 <p> Maori : {{ wordbank[1] }}</p>
                 <p> English : {{ wordbank[2] }}</p>
                 <p> Level : {{ wordbank[5] }}</p>
                 <p> Definition : {{ wordbank[4] }}</p>
                 <img src = "/static/images/{{ wordbank[6] }}">
-                {% if logged_in %}
-                    <p> Word id : {{ wordbank[0] }}</p>
-                    {% for user_index in username %}
-                        {%  if user_index[0] == wordbank[8] %}
-                            <p> Added by: {{ user_index[1]}} {{ user_index[2] }} ,Date added: {{ wordbank[7] }}</p>
-                        {% endif %}
-                        {%  if user_index[0] == wordbank[9] %}
-                            <p> Last edited by: {{ user_index[1]}} {{ user_index[2] }} ,Date edited: {{ wordbank[10] }}</p>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                <p> Word id : {{ wordbank[0] }}</p>
+
+                {% for user_index in username %} <!-- checks the username list for admin details -->
+                    {%  if user_index[0] == wordbank[8] %}
+                        <p> Added by: {{ user_index[1]}} {{ user_index[2] }} </p>
+                        <p> Date added: {{ wordbank[7] }}</p>
+                    {% endif %}
+                    {%  if user_index[0] == wordbank[9] %}
+                        <p> Last edited by: {{ user_index[1]}} {{ user_index[2] }} </p>
+                        <p> Date edited: {{ wordbank[10] }}</p>
+                    {% endif %}
+                {% endfor %}
+
     </div>
     <div>
 
-            {% if is_admin %}
+            {% if is_admin %} <!-- checks if they have admin privileges -->
                 <form class = "dataForm" method = "POST">
                     <div class ="form-group">
                             <div class ="form-label"> Modify maori word:</div>
@@ -58,8 +60,8 @@
 
                         <div class ="form-group">
                             <div class ="form-label">Modify level:</div>
-                                {% for i in range(10) %}
-                                    {% if i + 1  == wordbank[5] %}
+                                {% for i in range(10) %} <!-- makes a loop to display the 10 radios-->
+                                    {% if i + 1  == wordbank[5] %} <-- finds the level of the word and automatically checks it -->
                                         <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}" checked >
                                         <label>{{ i + 1 }}</label>
                                     {% else %}

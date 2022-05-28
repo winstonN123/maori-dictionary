@@ -18,7 +18,7 @@
 
 		<nav>
 			<ul>
-                {% if is_admin %}
+                {% if is_admin %} <!-- checks if they have admin privileges -->
                     <div class="dropdown">
                         <button class="dropbtn">Admin</button>
                         <div class="dropdown-content">
@@ -26,28 +26,23 @@
                             <li><a href = "/add_words"> Add words</a></li>
                         </div>
                     </div>
-                <p style = "color:white;">----------------</p>
+                    <div class = 'seperator'> ---------------- </div>
                 {% endif %}
 
                 <li><a href="\">Home</a></li>
-                {% for category in categories %}
+                {% for category in categories %} <!-- displays every category in the categories list -->
                     <li><a href="/category/{{ category[1] }}">{{ category[0] }}</a></li>
                 {% endfor %}
-                 <p style = "color:white;">----------------</p>
-                {% if logged_in %}
+                <div class = 'seperator'> ---------------- </div>
+                {% if logged_in %} <!-- if they are logged in, displays the logout button -->
                      <li><a href = "/logout">log out</a></li>
-                {% else %}
+                {% else %} <!-- otherwise, it displays the sign-in button -->
                     <li><a href = "/login">log in</a></li>
                 {% endif %}
 			</ul>
 		</nav>
 
 
-		<!--
-		=====================================================
-		== Content row of the template.                 ==
-		=====================================================
-		-->
 
 		<main>
             {% block main%}{% endblock %}

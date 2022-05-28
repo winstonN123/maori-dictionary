@@ -5,15 +5,15 @@
 {% block heading %}Maōri - English Dictionary{% endblock %}
 
 {% block main %}
-    {% for category in categories %}
+    {% for category in categories %} <!-- checks through the categories list and finds the right category-->
         {%  if category[1] == category_id %}
             <h2>{{ category[0] }}</h2>
         {% endif %}
     {% endfor %}
 
-        {% if is_admin %}
+        {% if is_admin %}  <!-- only shows if they have admin privileges -->
             <a href ="/category/{{ category_id }}?confirmation=delete">Delete this Category</a>
-            {% if confirmation == "delete" %}
+            {% if confirmation == "delete" %} <!-- if the variable is true, will give the link to delete it -->
                 <div>
                     <a href = "/category/{{ category_id }}?confirmation=yes">Yes</a>
                     <a href = "/category/{{ category_id }}?confirmation=no">No</a>
@@ -21,7 +21,7 @@
             {% endif %}
 
         {% for category in categories %}
-            {%  if category[1] == category_id %}
+            {%  if category[1] == category_id %} <!-- checks through the categories list to find the right categories -->
         <form class = "dataForm" method = "POST">
             <div class ="form-group">
                 <div class ="form-label">Modify Category :</div>
@@ -50,7 +50,7 @@
 
             <div class ="form-group">
                 <div class ="form-label">Level:</div>
-                {% for i in range(10) %}
+                {% for i in range(10) %} <!-- makes a loop which creates the 10 radios -->
                     <input type = "radio" name = "Level"  value = "{{i + 1 }}"  required>
                     <label>{{ i + 1 }}</label>
                 {% endfor %}
@@ -82,7 +82,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for wordbank in wordlist %}
+            {% for wordbank in wordlist %} <!-- checks through the wordlist to find the right word -->
                 {%  if wordbank[3] == category_id %}
                 <tr>
                     <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>

@@ -34,7 +34,7 @@ def is_logged_in():  # creates the function to show if someone is logged in
 def is_admin():  # creates the function to show if someone has admin rights
     if session.get('admin') != 1:
         print("denied")
-        return redirect("/") and False
+        return False
     else:
         return True
 
@@ -74,6 +74,14 @@ def wordbank_list():  # queries all the columns into a list
     return wordbank_list
 
 
+def real_page(list, id, id_postsition):  # checks if the page is a real page
+    for i in list:
+        if i[id_postsition] == id:
+            break
+    else:
+        return True
+
+
 @app.route('/', methods=['POST', 'GET'])
 def main():  # renders the homepage witch contains a search bar
 
@@ -82,7 +90,7 @@ def main():  # renders the homepage witch contains a search bar
         con = create_connection(DATABASE)
         query = "SELECT * FROM wordbank WHERE english LIKE ? OR maori LIKE ?"  # selects data form maori and english
         cur = con.cursor()
-        cur.execute(query, (search,search))  # column that is similar to a variable
+        cur.execute(query, (search, search))  # column that is similar to a variable
         search_results = cur.fetchall()  # and puts it into a list
         con.close()
 
@@ -198,16 +206,17 @@ def logout():  # the function for the user to sign out
 def category_pages(category_id):  # rendering the category pages
     error = request.args.get('error')  # gets the error data from url
     confirmation = str(request.args.get('confirmation'))  # gets the confirmation data from url
-
-
     try:
         category_id = int(category_id)  # checks if there is this category page
     except ValueError:  # if not, redirects them to home
         print("{} is not an integer".format(category_id))
         return redirect("/")
 
+    if real_page(categories(), category_id, 1):
+        return redirect('/')
     if confirmation == "yes":
-        is_admin()  # checks if they have access to this action
+        if is_admin():  # checks if they have access to this action
+            return redirect('/')
         query = "DELETE FROM category WHERE id = ?"  # deletes the category
         con = create_connection(DATABASE)
         cur = con.cursor()
@@ -245,7 +254,7 @@ def category_pages(category_id):  # rendering the category pages
             cur = con.cursor()
 
             try:
-                cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id,"noimage.png"))  # inserts it into database
+                cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id, "noimage.png"))  # inserts it into database
             except sqlite3.IntegrityError as e:
                 print(e)
                 print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
@@ -264,7 +273,7 @@ def category_pages(category_id):  # rendering the category pages
             cur = con.cursor()
 
             try:
-                cur.execute(query,(modify_category,category_id))
+                cur.execute(query, (modify_category, category_id))
             except sqlite3.IntegrityError as e:
                 print(e)
                 print("### PROBLEM UPDATING DATABASE- FOREIGN KEY ###")
@@ -277,7 +286,7 @@ def category_pages(category_id):  # rendering the category pages
         error = ""
 
     return render_template("category.html", wordlist=wordbank_list(), categories=categories(), category_id=category_id,
-                           logged_in=is_logged_in(), is_admin=is_admin(), confirmation=confirmation,error=error)
+                           logged_in=is_logged_in(), is_admin=is_admin(), confirmation=confirmation, error=error)
 
 
 @app.route('/word/<word_id>', methods=['POST', 'GET'])
@@ -292,12 +301,16 @@ def word_page(word_id):  # rendering the word pages
         print("{} is not an integer".format(word_id))
         return redirect("/")
 
+    if real_page(wordbank_list(), word_id, 0):
+        return redirect('/')
+
     for word in wordbank:  # finds the word's category id
         if word[0] == word_id:
             category_id = word[3]
 
     if confirmation == "yes":
-        is_admin()  # checks if they have permission to do this action
+        if is_admin():  # checks if they have access to this action
+            return redirect('/')
         query = "DELETE FROM wordbank WHERE id = ?"  # deletes word form database
         con = create_connection(DATABASE)
         cur = con.cursor()
@@ -306,10 +319,11 @@ def word_page(word_id):  # rendering the word pages
         con.close()
         return redirect("/category/{}".format(category_id))
     elif confirmation == "no":  # if they cancel, it redirects them back
-        return redirect("/category/{}".format(category_id))
+        return redirect("/word/{}".format(word_id))
 
     if request.method == 'POST':
-        is_admin()  # checks if they have permission to do this action
+        if is_admin():  # checks if they have access to this action
+            return redirect('/')
         print(request.form)
         modify_maori = request.form.get('Modify_maori').strip().title()  # getting all the data from the forms
         modify_english = request.form.get('Modify_english').strip().title()
@@ -341,7 +355,7 @@ def word_page(word_id):  # rendering the word pages
 
     return render_template("word.html", wordlist=wordbank_list(), categories=categories(), word_id=word_id,
                            logged_in=is_logged_in(), username=username(), confirmation=confirmation,
-                           is_admin=is_admin(), error=error,category_id=category_id)
+                           is_admin=is_admin(), error=error, category_id=category_id)
 
 
 @app.route("/add_words", methods=['POST', 'GET'])
@@ -389,7 +403,8 @@ def add_category():  # renders the add category page
     error = request.args.get('error')
 
     if request.method == "POST":
-        is_admin()  # checks if they have permission to do this action
+        if is_admin():  # checks if they have access to this action
+            return redirect('/')
         category = request.form.get('add_category').strip().title()
 
         if valid_characters(category):  # checks if it has numbers in the input

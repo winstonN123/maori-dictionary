@@ -19,9 +19,9 @@
                 <div class ="form-element"><input type = "submit" value="Submit"></div>
         </div>
     </form>
-    {% if Search_results == "Empty" %}
+    {% if Search_results == "Empty" %} <!-- there is no "error" message if they opened the home page -->
         <p></p>
-    {% elif Search_results == "None" %}
+    {% elif Search_results == "None" %} <!-- if nothing was found it displays an "error" message -->
         <p>Nothing found, make sure you spelt it correctly!</p>
     {% else %}
         <table>
@@ -32,7 +32,7 @@
             </thead>
 
             <tbody>
-                {% for wordbank in Search_results %}
+                {% for wordbank in Search_results %} <!-- looks through the returned search results and displays each of them -->
                     <tr>
                         <td><a href = "/word/{{ wordbank[0] }}">{{ wordbank[1] }}</a></td>
                         <td><a>{{ wordbank[2] }}</a></td>

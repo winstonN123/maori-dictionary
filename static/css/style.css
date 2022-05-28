@@ -16,8 +16,12 @@
     margin: 0px 0px;
 }
 
-error{
+.error{
     color: #ff0000;
+}
+
+.seperator{
+    color: white;
 }
 
 button{
@@ -341,7 +345,7 @@ footer img {
     }
 
     main {
-        background-image: url('/poutama.jpg');
+        background-image: url("../images/poutama.jpg");
     }
     .formRow {
         display: grid;
