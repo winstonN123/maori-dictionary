@@ -94,9 +94,11 @@ def main():  # renders the homepage witch contains a search bar
         search_results = cur.fetchall()  # and puts it into a list
         con.close()
 
-        if len(search_results) == 0 and search == "None%":  # checks if the query actually finds something and the search button has been used
+        if len(search_results) == 0 and search == "None%":  # checks if the query actually finds
+            # something and the search button has been used
             search_results = "Empty"
-        elif len(search_results) == 0:   # checks if the query actually finds anything and if the search button been used
+        elif len(search_results) == 0:   # checks if the query actually finds
+            # anything and if the search button been used
             search_results = "None"
     print(search_results)
     return render_template("home.html", categories=categories(), logged_in=is_logged_in(),
@@ -168,12 +170,14 @@ def signup():  # renders the signup page
         if valid_characters(firstname) or valid_characters(lastname):  # checks if there is any numbers
             return redirect('/signup?error=input+cannot+contain+characters')  # in their first or last names
 
-        if len(firstname) < 2 or len(lastname) < 2:  # checks if their last and first name has to be longer than two characters
+        if len(firstname) < 2 or len(lastname) < 2:  # checks if their last and first name
+            # has to be longer than two characters
             return redirect('/signup?error=firstname+or+lastname+must+both+contain+more+than+two+characters')
 
         hashed_password = bcrypt.generate_password_hash(password)  # encrypts the password with hash
         con = create_connection(DATABASE)
-        query = "INSERT INTO login (firstname,lastname,email,password,admin) VALUES (?,?,?,?,?)"  # adds the data into the database
+        query = "INSERT INTO login (firstname,lastname,email,password,admin) VALUES (?,?,?,?,?)"  # adds the data
+        # into the database
         cur = con.cursor()
 
         try:
@@ -212,8 +216,9 @@ def category_pages(category_id):  # rendering the category pages
         print("{} is not an integer".format(category_id))
         return redirect("/")
 
-    if real_page(categories(), category_id, 1):
+    if real_page(categories(), category_id, 1):  # checks if it is real page
         return redirect('/')
+
     if confirmation == "yes":
         if is_admin():  # checks if they have access to this action
             return redirect('/')
@@ -250,11 +255,13 @@ def category_pages(category_id):  # rendering the category pages
                 return redirect('/category/{}?error=input+cannot+contain+numbers'.format(category_id))
 
             con = create_connection(DATABASE)
-            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) VALUES (?,?,?,?,?,?,?,?)"
+            query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) " \
+                    "VALUES (?,?,?,?,?,?,?,?)"
             cur = con.cursor()
 
             try:
-                cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition, new_level, date, user_id, "noimage.png"))  # inserts it into database
+                cur.execute(query, (new_maori_word, new_english_word, category_id, new_definition,
+                                    new_level, date, user_id, "noimage.png"))  # inserts it into database
             except sqlite3.IntegrityError as e:
                 print(e)
                 print("### PROBLEM INSERTING INTO DATABASE- FOREIGN KEY ###")
@@ -301,7 +308,7 @@ def word_page(word_id):  # rendering the word pages
         print("{} is not an integer".format(word_id))
         return redirect("/")
 
-    if real_page(wordbank_list(), word_id, 0):
+    if real_page(wordbank_list(), word_id, 0):  # checks if it is a real page
         return redirect('/')
 
     for word in wordbank:  # finds the word's category id
@@ -377,7 +384,8 @@ def add_words_page():  # renders the add words page
             return redirect('/add_words?error=input+cannot+contain+numbers')
 
         con = create_connection(DATABASE)
-        query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) VALUES (?,?,?,?,?,?,?,?)"
+        query = "INSERT INTO wordbank (maori,english,categories,definition,level,date,user,image) " \
+                "VALUES (?,?,?,?,?,?,?,?)"
         cur = con.cursor()
 
         try:
