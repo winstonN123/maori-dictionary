@@ -13,7 +13,7 @@
 
     {% if is_admin %} <!-- checks if they have admin privileges -->
         <a href ="/word/{{ word_id }}?confirmation=delete">Delete this word</a>
-        {% if confirmation == "delete" %} if the confirmation is delete, displays a confirmation
+        {% if confirmation == "delete" %} <!-- if the confirmation is deleted, displays a confirmation -->
             <div>
                 <a href = "/word/{{ word_id }}?confirmation=yes">Yes</a>
                 <a href = "/word/{{ word_id }}?confirmation=no">No</a>
@@ -61,7 +61,7 @@
                         <div class ="form-group">
                             <div class ="form-label">Modify level:</div>
                                 {% for i in range(10) %} <!-- makes a loop to display the 10 radios-->
-                                    {% if i + 1  == wordbank[5] %} <-- finds the level of the word and automatically checks it -->
+                                    {% if i + 1  == wordbank[5] %} <!-- finds the level of the word and automatically checks it -->
                                         <input type = "radio" name = "Modify_level"  value = "{{i + 1 }}" checked >
                                         <label>{{ i + 1 }}</label>
                                     {% else %}

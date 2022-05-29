@@ -131,7 +131,7 @@ def login():  # renders the login page
         except IndexError:
             return redirect("/login?error=Email+invalid+or+password+incorrect")
 
-        if not bcrypt.check_password_hash(db_password, password):
+        if not bcrypt.check_password_hash(db_password, password):  # checks if password or email are correct
             return redirect(request.referrer + '?error=Email+invalid+or+password+incorrect')
 
         session['admin'] = admin  # sets up sessions
@@ -170,7 +170,7 @@ def signup():  # renders the signup page
         if valid_characters(firstname) or valid_characters(lastname):  # checks if there is any numbers
             return redirect('/signup?error=input+cannot+contain+characters')  # in their first or last names
 
-        if len(firstname) < 2 or len(lastname) < 2:  # checks if their last and first name
+        if len(firstname) <= 2 or len(lastname) <= 2:  # checks if their last and first name
             # has to be longer than two characters
             return redirect('/signup?error=firstname+or+lastname+must+both+contain+more+than+two+characters')
 
@@ -207,7 +207,7 @@ def logout():  # the function for the user to sign out
 
 
 @app.route('/category/<category_id>', methods=['POST', 'GET'])
-def category_pages(category_id):  # rendering the category pages
+def category_pages(category_id):      # rendering the category pages
     error = request.args.get('error')  # gets the error data from url
     confirmation = str(request.args.get('confirmation'))  # gets the confirmation data from url
     try:
@@ -220,7 +220,7 @@ def category_pages(category_id):  # rendering the category pages
         return redirect('/')
 
     if confirmation == "yes":
-        if is_admin():  # checks if they have access to this action
+        if not is_admin():  # checks if they have access to this action
             return redirect('/')
         query = "DELETE FROM category WHERE id = ?"  # deletes the category
         con = create_connection(DATABASE)
@@ -247,7 +247,7 @@ def category_pages(category_id):  # rendering the category pages
             new_english_word = request.form.get('English').strip().title()
             new_level = request.form.get('Level')
             new_definition = request.form.get('Definition')
-            date = datetime.now()
+            date = datetime.now().strftime('%d-%m-%Y')
             user_id = session.get('user_id')
 
             if valid_characters(new_maori_word) or valid_characters(new_english_word) or valid_characters(
@@ -316,7 +316,7 @@ def word_page(word_id):  # rendering the word pages
             category_id = word[3]
 
     if confirmation == "yes":
-        if is_admin():  # checks if they have access to this action
+        if not is_admin():  # checks if they have access to this action
             return redirect('/')
         query = "DELETE FROM wordbank WHERE id = ?"  # deletes word form database
         con = create_connection(DATABASE)
@@ -329,14 +329,14 @@ def word_page(word_id):  # rendering the word pages
         return redirect("/word/{}".format(word_id))
 
     if request.method == 'POST':
-        if is_admin():  # checks if they have access to this action
+        if not is_admin():  # checks if they have access to this action
             return redirect('/')
         print(request.form)
         modify_maori = request.form.get('Modify_maori').strip().title()  # getting all the data from the forms
         modify_english = request.form.get('Modify_english').strip().title()
         modify_level = request.form.get('Modify_level')
         modify_definition = request.form.get('Modify_definition')
-        date = datetime.now()
+        date = datetime.now().strftime('%d-%m-%Y')
         user_id = session.get('user_id')
 
         if valid_characters(modify_maori) or valid_characters(modify_english) or valid_characters(modify_definition):
@@ -375,7 +375,7 @@ def add_words_page():  # renders the add words page
         new_english_word = request.form.get('English').strip().title()
         new_level = request.form.get('Level')
         new_definition = request.form.get('Definition')
-        date = datetime.now()
+        date = datetime.now().strftime('%d-%m-%Y')
         category_id = request.form.get('Categories')
         user_id = session.get('user_id')
 
