@@ -132,7 +132,7 @@ def login():  # renders the login page
             return redirect("/login?error=Email+invalid+or+password+incorrect")
 
         if not bcrypt.check_password_hash(db_password, password):  # checks if password or email are correct
-            return redirect(request.referrer + '?error=Email+invalid+or+password+incorrect')
+            return redirect('/login?error=Email+invalid+or+password+incorrect')
 
         session['admin'] = admin  # sets up sessions
         session['email'] = email
